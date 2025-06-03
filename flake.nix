@@ -57,17 +57,12 @@
             cairo
             gdk-pixbuf
             glib
-            alsa-lib
             cups
           ]
-          ++ lib.optionals stdenv.isDarwin (
-            with darwin.apple_sdk.frameworks;
+          ++ lib.optionals stdenv.isLinux (
+            with pkgs;
             [
-              AppKit
-              CoreServices
-              CoreText
-              CoreGraphics
-              Foundation
+              alsa-lib
             ]
           );
       in
@@ -112,6 +107,13 @@
             dev = pkgs.writeShellScript "dev" ''
               export NIX_LD=$(cat ${stdenv.cc}/nix-support/dynamic-linker)
               export NIX_LD_LIBRARY_PATH="${lib.makeLibraryPath buildInputs}"
+
+              # if is macOS, just skip to the pnpm install
+              if [ "${builtins.toString stdenv.isDarwin}" = "1" ]; then
+                ${pkgs.pnpm}/bin/pnpm install
+                ${pkgs.pnpm}/bin/pnpm dev
+                exit 0
+              fi
 
               electron_version=$(find node_modules -path "*/electron/dist/electron" | head -1 | sed 's/.*electron@//' | sed 's|/node_modules/electron/dist/electron||')
               echo "Electron version: $electron_version"
