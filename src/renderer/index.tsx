@@ -1,12 +1,15 @@
-import ReactDom from 'react-dom/client'
-import React from 'react'
+import ReactDom from "react-dom/client";
+import React from "react";
 
-import { AppRoutes } from './routes'
+import { routeTree } from "./routeTree.gen";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-import './globals.css'
+const router = createRouter({ routeTree });
 
-ReactDom.createRoot(document.querySelector('app') as HTMLElement).render(
+import "./globals.css";
+
+ReactDom.createRoot(document.querySelector("app") as HTMLElement).render(
   <React.StrictMode>
-    <AppRoutes />
-  </React.StrictMode>
-)
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+);
