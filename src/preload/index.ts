@@ -1,14 +1,17 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from "electron";
 
 declare global {
   interface Window {
-    App: typeof API
+    App: typeof API;
   }
 }
 
 const API = {
-  sayHelloFromBridge: () => console.log('\nHello from bridgeAPI! 👋\n\n'),
-  username: process.env.USER,
-}
+  settings: {
+    getConfigFile: () => ipcRenderer.invoke("settings:getConfigFile"),
+    createConfigFileIfNotExists: () =>
+      ipcRenderer.invoke("settings:createConfigFileIfNotExists"),
+  },
+};
 
-contextBridge.exposeInMainWorld('App', API)
+contextBridge.exposeInMainWorld("App", API);
