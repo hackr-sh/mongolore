@@ -1,10 +1,11 @@
-import { app } from 'electron'
+import { app } from "electron";
 
-import { makeAppWithSingleInstanceLock } from 'lib/electron-app/factories/app/instance'
-import { makeAppSetup } from 'lib/electron-app/factories/app/setup'
-import { MainWindow } from './windows/main'
+import { makeAppWithSingleInstanceLock } from "lib/electron-app/factories/app/instance";
+import { makeAppSetup } from "lib/electron-app/factories/app/setup";
+import { MainWindow } from "./windows/main";
+import "api";
 
 makeAppWithSingleInstanceLock(async () => {
-  await app.whenReady()
-  await makeAppSetup(MainWindow)
-})
+  await app.whenReady();
+  await makeAppSetup(MainWindow);
+});
