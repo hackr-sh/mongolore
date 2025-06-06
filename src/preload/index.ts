@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { MongoloreConfig } from "shared/models/mongolore-config";
+import type { MongoloreConfig } from "shared/models/mongolore-config";
 
 declare global {
   interface Window {
