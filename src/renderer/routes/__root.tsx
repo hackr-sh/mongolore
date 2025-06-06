@@ -2,7 +2,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { IntroWorkflow } from "renderer/components/intro-workflow";
 import { ThemeProvider } from "renderer/components/theme-provider";
-import { MongoloreConfig } from "shared/models/mongolore-config";
+import type { MongoloreConfig } from "shared/models/mongolore-config";
 import { Loader2Icon } from "lucide-react";
 
 export const Route = createRootRoute({
@@ -30,7 +30,13 @@ export const Route = createRootRoute({
         ) : config ? (
           <Outlet />
         ) : (
-          <IntroWorkflow />
+          <IntroWorkflow
+            onDone={() => {
+              window.App.settings.getConfigFile().then((config) => {
+                setConfig(config);
+              });
+            }}
+          />
         )}
       </ThemeProvider>
     );
