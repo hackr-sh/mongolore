@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+import { MongoloreConfig } from "shared/models/mongolore-config";
 
 declare global {
   interface Window {
@@ -8,7 +9,10 @@ declare global {
 
 const API = {
   settings: {
-    getConfigFile: () => ipcRenderer.invoke("settings:getConfigFile"),
+    getConfigFile: () =>
+      ipcRenderer.invoke("settings:getConfigFile") as Promise<
+        MongoloreConfig | undefined
+      >,
     createConfigFileIfNotExists: () =>
       ipcRenderer.invoke("settings:createConfigFileIfNotExists"),
   },

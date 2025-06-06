@@ -1,4 +1,6 @@
-export const defaultConfig = {
+import type { MongoloreConfig } from "shared/models/mongolore-config";
+
+export const defaultConfig: MongoloreConfig = {
   preferredLanguage: "en",
   preferredDarkTheme: "rose-pine",
   preferredLightTheme: "rose-pine",
@@ -7,6 +9,4 @@ export const defaultConfig = {
   preferredLineHeight: 1.5,
   preferredLetterSpacing: 0.01,
   preferredWordSpacing: 0.01,
-  preferredTextAlign: "left",
-  preferredTextTransform: "none",
 };
