@@ -3,10 +3,10 @@ import path from "node:path";
 import fs from "node:fs";
 import { defaultConfig } from "resources/config/defaultConfig";
 
-ipcMain.handle("settings:getConfigFile", () => {
+ipcMain.handle("settings:getConfigFile", async () => {
   const configFile = path.join(app.getPath("userData"), "config.json");
   if (!fs.existsSync(configFile)) {
-    return null;
+    return undefined;
   }
   return JSON.parse(fs.readFileSync(configFile, "utf8"));
 });
