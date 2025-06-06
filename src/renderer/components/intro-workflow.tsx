@@ -2,8 +2,9 @@ import { BlurFade } from "components/magicui/blur-fade";
 import { TypingAnimation } from "components/magicui/typing-animation";
 import { ArrowRightIcon } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
-export const IntroWorkflow = () => {
+export const IntroWorkflow = ({ onDone }: { onDone: () => void }) => {
   const [workflowStep, setWorkflowStep] = useState<
     "welcome" | "settings" | "done"
   >("welcome");
@@ -18,7 +19,12 @@ export const IntroWorkflow = () => {
           <Settings onNext={() => setWorkflowStep("done")} />
         )}
         {workflowStep === "done" && (
-          <Done onNext={() => setWorkflowStep("welcome")} />
+          <Done
+            onNext={() => {
+              window.App.settings.createConfigFileIfNotExists();
+              onDone();
+            }}
+          />
         )}
       </div>
     </div>
@@ -40,20 +46,29 @@ const Welcome = ({
       >
         Welcome to mongolore!
       </TypingAnimation>
-      <div className="flex flex-row gap-2 items-center justify-center mt-2">
-        <TypingAnimation
-          delay={21 * 35}
-          duration={35}
-          className="text-sm font-bold text-muted-foreground"
-          startOnView
-          as="h2"
+      <BlurFade
+        delay={(21 * 35) / 1000}
+        className="mt-2 w-full flex justify-center items-center "
+      >
+        <Button
+          className="flex flex-row gap-2 items-center justify-center hover:[&_svg]:translate-x-1"
+          variant="ghost"
+          onClick={() => onNext("settings")}
         >
-          Let's get you started!
-        </TypingAnimation>
-        <BlurFade delay={((21 + 22) * 35 + 300) / 1000}>
-          <ArrowRightIcon className="h-4 w-4 animate-pulse" />
-        </BlurFade>
-      </div>
+          <TypingAnimation
+            delay={23 * 35}
+            duration={35}
+            className="text-sm font-bold text-muted-foreground"
+            startOnView
+            as="h2"
+          >
+            Let's get you started!
+          </TypingAnimation>
+          <BlurFade delay={((23 + 22) * 35 + 300) / 1000}>
+            <ArrowRightIcon className="h-4 w-4 animate-pulse transition-all" />
+          </BlurFade>
+        </Button>
+      </BlurFade>
     </div>
   );
 };
