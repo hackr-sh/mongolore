@@ -38,7 +38,7 @@ const Welcome = ({
         startOnView
         as="h1"
       >
-        Welcome to Mongolore!
+        Welcome to mongolore!
       </TypingAnimation>
       <div className="flex flex-row gap-2 items-center justify-center mt-2">
         <TypingAnimation
