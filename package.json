@@ -31,6 +31,7 @@
     "lint:fix": "biome lint --write --no-errors-on-unmatched"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-router": "^1.120.15",
     "@tanstack/react-router-devtools": "^1.120.15",
     "class-variance-authority": "^0.7.1",
