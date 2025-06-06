@@ -78,7 +78,30 @@ const Settings = ({
 }: {
   onNext: React.Dispatch<React.SetStateAction<"welcome" | "settings" | "done">>;
 }) => {
-  return <div>Settings</div>;
+  return (
+    <div>
+      <TypingAnimation
+        duration={35}
+        className="text-muted-foreground"
+        startOnView
+        as="h1"
+      >
+        You will eventually be able to configure your settings here.
+      </TypingAnimation>
+      <BlurFade
+        delay={(60 * 35) / 1000}
+        className="mt-2 w-full flex justify-center items-center "
+      >
+        <Button
+          className="flex flex-row gap-2 items-center justify-center hover:[&_svg]:translate-x-1"
+          variant="ghost"
+          onClick={() => onNext("settings")}
+        >
+          Create default config file and continue
+        </Button>
+      </BlurFade>
+    </div>
+  );
 };
 
 const Done = ({
