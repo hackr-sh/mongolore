@@ -1,8 +1,9 @@
 import { BlurFade } from "components/magicui/blur-fade";
 import { TypingAnimation } from "components/magicui/typing-animation";
 import { ArrowRightIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { useConfetti } from "components/magicui/confetti";
 
 export const IntroWorkflow = ({ onDone }: { onDone: () => void }) => {
   const [workflowStep, setWorkflowStep] = useState<
@@ -16,12 +17,21 @@ export const IntroWorkflow = ({ onDone }: { onDone: () => void }) => {
           <Welcome onNext={() => setWorkflowStep("settings")} />
         )}
         {workflowStep === "settings" && (
-          <Settings onNext={() => setWorkflowStep("done")} />
+          <Settings
+            onNext={() => {
+              window.App.settings.createConfigFileIfNotExists();
+              setWorkflowStep("done");
+            }}
+          />
         )}
         {workflowStep === "done" && (
           <Done
             onNext={() => {
-              window.App.settings.createConfigFileIfNotExists();
+              // verify config file exists
+              const configFile = window.App.settings.getConfigFile();
+              if (!configFile) {
+                throw new Error("Config file not found");
+              }
               onDone();
             }}
           />
@@ -31,11 +41,7 @@ export const IntroWorkflow = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-const Welcome = ({
-  onNext,
-}: {
-  onNext: React.Dispatch<React.SetStateAction<"welcome" | "settings" | "done">>;
-}) => {
+const Welcome = ({ onNext }: { onNext: () => void }) => {
   return (
     <div>
       <TypingAnimation
@@ -53,7 +59,7 @@ const Welcome = ({
         <Button
           className="flex flex-row gap-2 items-center justify-center hover:[&_svg]:translate-x-1"
           variant="ghost"
-          onClick={() => onNext("settings")}
+          onClick={onNext}
         >
           <TypingAnimation
             delay={23 * 35}
@@ -73,11 +79,7 @@ const Welcome = ({
   );
 };
 
-const Settings = ({
-  onNext,
-}: {
-  onNext: React.Dispatch<React.SetStateAction<"welcome" | "settings" | "done">>;
-}) => {
+const Settings = ({ onNext }: { onNext: () => void }) => {
   return (
     <div>
       <TypingAnimation
@@ -95,7 +97,7 @@ const Settings = ({
         <Button
           className="flex flex-row gap-2 items-center justify-center hover:[&_svg]:translate-x-1"
           variant="ghost"
-          onClick={() => onNext("settings")}
+          onClick={onNext}
         >
           Create default config file and continue
         </Button>
@@ -104,10 +106,14 @@ const Settings = ({
   );
 };
 
-const Done = ({
-  onNext,
-}: {
-  onNext: React.Dispatch<React.SetStateAction<"welcome" | "settings" | "done">>;
-}) => {
-  return <div>Done</div>;
+const Done = ({ onNext }: { onNext: () => void }) => {
+  const { triggerSideCannons } = useConfetti();
+  useEffect(() => {
+    triggerSideCannons({ duration: 1000 });
+  }, []);
+  return (
+    <Button variant="outline" onClick={onNext}>
+      Get started
+    </Button>
+  );
 };
