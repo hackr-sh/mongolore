@@ -1,4 +1,5 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { MasterDetail } from "renderer/components/master-detail";
 
 export const Route = createFileRoute("/_index")({
   component: RouteComponent,
@@ -6,9 +7,8 @@ export const Route = createFileRoute("/_index")({
 
 function RouteComponent() {
   return (
-    <div>
-      Hello "/index/_index"!
-      <Outlet />
+    <div className="flex h-screen w-screen">
+      <MasterDetail />
     </div>
   );
 }
