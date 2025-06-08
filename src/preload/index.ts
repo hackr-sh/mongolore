@@ -16,6 +16,12 @@ const API = {
     createConfigFileIfNotExists: () =>
       ipcRenderer.invoke("settings:createConfigFileIfNotExists"),
   },
+  safeStorage: {
+    isEncryptionAvailable: () =>
+      ipcRenderer.invoke(
+        "safeStorage:isEncryptionAvailable",
+      ) as Promise<boolean>,
+  },
 };
 
 contextBridge.exposeInMainWorld("App", API);

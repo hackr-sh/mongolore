@@ -3,13 +3,16 @@ import { IntroWorkflow } from "renderer/components/intro-workflow";
 import { ThemeProvider } from "renderer/providers/theme-provider";
 import { Loader2Icon } from "lucide-react";
 import { ConfigProvider, useConfig } from "renderer/providers/config-provider";
+import { ConnectionsProvider } from "renderer/providers/connections-provider";
 
 export const Route = createRootRoute({
   component: () => {
     return (
       <ConfigProvider>
         <ThemeProvider>
-          <RootComponent />
+          <ConnectionsProvider>
+            <RootComponent />
+          </ConnectionsProvider>
         </ThemeProvider>
       </ConfigProvider>
     );
