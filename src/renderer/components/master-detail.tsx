@@ -8,11 +8,11 @@ import {
 export const MasterDetail = () => {
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel defaultSize={20}>
-        <div>Master</div>
+      <ResizablePanel className="p-4 mt-4" defaultSize={20}>
+        Master
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel>
+      <ResizablePanel className="p-4 mt-4">
         <Outlet />
       </ResizablePanel>
     </ResizablePanelGroup>
