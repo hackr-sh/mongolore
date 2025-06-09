@@ -1,104 +1,98 @@
-import { createContext, useContext, useEffect, useState } from "react";
-
-interface ConnectionDetails {
-  id: string;
-  name: string;
-  uri: string;
-}
+import { createContext, useContext, useEffect, useState } from 'react'
 
 interface ConnectionsContextValue {
-  connection: ConnectionDetails | undefined;
-  allConnections: ConnectionDetails[];
-  isEncryptionAvailable: boolean;
-  checkEncryptionAvailability: () => Promise<boolean>;
-  addConnection: (details: Omit<ConnectionDetails, "id">) => Promise<void>;
-  removeConnection: (id: string) => Promise<void>;
-  updateConnection: (
-    id: string,
-    details: Partial<ConnectionDetails>,
-  ) => Promise<void>;
-  selectConnection: (id: string) => void;
+  connection: string | undefined
+  allConnections: string[]
+  isEncryptionAvailable: boolean
+  checkEncryptionAvailability: () => Promise<boolean>
+  addConnection: (details: string) => Promise<void>
+  removeConnection: (id: string) => Promise<void>
+  updateConnection: (id: string, details: Partial<string>) => Promise<void>
+  selectConnection: (id: string) => void
 }
 
 const ConnectionsContext = createContext<ConnectionsContextValue | undefined>(
-  undefined,
-);
+  undefined
+)
 
 export function ConnectionsProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [connections, setConnections] = useState<ConnectionDetails[]>([]);
-  const [selectedConnectionId, setSelectedConnectionId] = useState<string>();
+  const [connections, setConnections] = useState<{
+    [key: string]: string
+  }>({})
+  const [selectedConnectionId, setSelectedConnectionId] = useState<
+    string | undefined
+  >()
   const [isEncryptionAvailable, setIsEncryptionAvailable] = useState<
-    "loading" | boolean
-  >(false);
-
-  // useEffect(() => {
-  //   // Load saved connections on mount
-  //   window.App.safeStorage.getConnections().then((savedConnections) => {
-  //     if (savedConnections) {
-  //       setConnections(savedConnections);
-  //     }
-  //   });
-  // }, []);
+    'loading' | boolean
+  >(false)
 
   useEffect(() => {
-    checkEncryptionAvailability().then((isAvailable) => {
-      if (!isAvailable) {
-        setIsEncryptionAvailable(false);
+    window.App.safeStorage.getConnections().then(savedConnections => {
+      if (savedConnections) {
+        setConnections(savedConnections)
       }
-    });
-  }, []);
+    })
+  }, [])
+
+  useEffect(() => {
+    checkEncryptionAvailability().then(isAvailable => {
+      if (!isAvailable) {
+        setIsEncryptionAvailable(false)
+      } else {
+        setIsEncryptionAvailable(true)
+      }
+    })
+  }, [])
 
   const checkEncryptionAvailability = async () => {
-    return await window.App.safeStorage.isEncryptionAvailable();
-  };
+    return await window.App.safeStorage.isEncryptionAvailable()
+  }
 
-  const addConnection = async (details: Omit<ConnectionDetails, "id">) => {
-    const newConnection = {
-      ...details,
-      id: crypto.randomUUID(),
-    };
-
-    const updatedConnections = [...connections, newConnection];
-    await window.App.safeStorage.saveConnections(updatedConnections);
-    setConnections(updatedConnections);
-  };
+  const addConnection = async (connectionString: string) => {
+    const key = await window.App.safeStorage.addConnection({
+      data: connectionString,
+    })
+    const updatedConnections = { ...connections, [key]: connectionString }
+    setConnections(updatedConnections)
+  }
 
   const removeConnection = async (id: string) => {
-    const updatedConnections = connections.filter((conn) => conn.id !== id);
-    await window.App.safeStorage.saveConnections(updatedConnections);
-    setConnections(updatedConnections);
+    await window.App.safeStorage.removeConnection({
+      key: id,
+    })
+    const updatedConnections = { ...connections }
+    delete updatedConnections[id]
+    setConnections(updatedConnections)
 
     if (selectedConnectionId === id) {
-      setSelectedConnectionId(undefined);
+      setSelectedConnectionId(undefined)
     }
-  };
+  }
 
-  const updateConnection = async (
-    id: string,
-    details: Partial<ConnectionDetails>,
-  ) => {
-    const updatedConnections = connections.map((conn) =>
-      conn.id === id ? { ...conn, ...details } : conn,
-    );
-    await window.App.safeStorage.saveConnections(updatedConnections);
-    setConnections(updatedConnections);
-  };
+  const updateConnection = async (id: string, connectionString: string) => {
+    const updatedConnections = { ...connections, [id]: connectionString }
+    await window.App.safeStorage.updateConnection({
+      key: id,
+      data: connectionString,
+    })
+    setConnections(updatedConnections)
+  }
 
   const selectConnection = (id: string) => {
-    setSelectedConnectionId(id);
-  };
+    setSelectedConnectionId(id)
+  }
 
   return (
     <ConnectionsContext.Provider
       value={{
-        connection: connections.find(
-          (conn) => conn.id === selectedConnectionId,
-        ),
-        allConnections: connections,
+        connection: selectedConnectionId
+          ? connections[selectedConnectionId]
+          : undefined,
+        allConnections: Object.values(connections),
         isEncryptionAvailable: isEncryptionAvailable === true,
         checkEncryptionAvailability,
         addConnection,
@@ -109,13 +103,13 @@ export function ConnectionsProvider({
     >
       {children}
     </ConnectionsContext.Provider>
-  );
+  )
 }
 
 export function useConnections() {
-  const context = useContext(ConnectionsContext);
+  const context = useContext(ConnectionsContext)
   if (!context) {
-    throw new Error("useConnections must be used within a ConnectionsProvider");
+    throw new Error('useConnections must be used within a ConnectionsProvider')
   }
-  return context;
+  return context
 }
