@@ -14,7 +14,10 @@ function getConnections() {
     'utf8'
   )
   return JSON.parse(connections) as {
-    [key: string]: string
+    [key: string]: {
+      cs: string
+      name: string
+    }
   }
 }
 
@@ -31,13 +34,19 @@ ipcMain.handle(
   async (
     event,
     data: {
-      data: string
+      data: {
+        cs: string
+        name: string
+      }
     }
   ) => {
-    const buffer = safeStorage.encryptString(data.data)
+    const buffer = safeStorage.encryptString(data.data.cs)
     const key = crypto.randomUUID()
     const parsedConnections = getConnections()
-    parsedConnections[key] = buffer.toString('base64')
+    parsedConnections[key] = {
+      cs: buffer.toString('base64'),
+      name: data.data.name,
+    }
     fs.writeFileSync(
       path.join(app.getPath('userData'), 'connections.json'),
       JSON.stringify(parsedConnections, null, 2)
@@ -69,13 +78,19 @@ ipcMain.handle(
     event,
     data: {
       key: string
-      data: string
+      data: {
+        cs: string
+        name: string
+      }
     }
   ) => {
-    const buffer = safeStorage.encryptString(data.data)
+    const buffer = safeStorage.encryptString(data.data.cs)
     const parsedConnections = getConnections()
     if (parsedConnections[data.key]) {
-      parsedConnections[data.key] = buffer.toString('base64')
+      parsedConnections[data.key] = {
+        cs: buffer.toString('base64'),
+        name: parsedConnections[data.key].name,
+      }
     } else {
       throw new Error('Connection not found')
     }
@@ -97,7 +112,7 @@ ipcMain.handle(
     const parsedConnections = getConnections()
     if (parsedConnections[data.key]) {
       return safeStorage.decryptString(
-        Buffer.from(parsedConnections[data.key], 'base64')
+        Buffer.from(parsedConnections[data.key].cs, 'base64')
       )
     }
     return undefined

@@ -5,23 +5,24 @@ import { XIcon } from 'lucide-react'
 import ComplexInput from './complex-input'
 
 export const ConnectionsDialog = () => {
-  const { allConnections } = useConnections()
+  const { allConnections, addConnection, selectConnection, connectionId } =
+    useConnections()
   const [open, setOpen] = useState(false)
   const [connectionString, setConnectionString] = useState('')
   const [name, setName] = useState('')
   const [newConnectionStep, setNewConnectionStep] = useState(false)
 
   useEffect(() => {
-    if (allConnections.length === 0) {
+    if (!connectionId) {
       setOpen(true)
     }
-  }, [allConnections])
+  }, [connectionId])
 
   if (!open) return null
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black/80 z-50 flex items-center justify-center backdrop-blur-xl">
-      {allConnections.length > 0 ? (
+      {!!connectionId && (
         <Button
           className="fixed top-8 left-4"
           variant="ghost"
@@ -29,7 +30,7 @@ export const ConnectionsDialog = () => {
         >
           <XIcon />
         </Button>
-      ) : null}
+      )}
       <div className="w-full h-full flex items-center justify-center flex-col gap-4">
         {newConnectionStep && (
           <div className="flex flex-col gap-4 w-xl">
@@ -60,21 +61,49 @@ export const ConnectionsDialog = () => {
                 }
               }}
             />
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (name && connectionString) {
+                  addConnection({
+                    name,
+                    connectionString,
+                  })
+                  setNewConnectionStep(false)
+                }
+              }}
+            >
+              Add connection
+            </Button>
           </div>
         )}
 
         {!newConnectionStep && (
           <>
-            {allConnections.length > 0 && (
+            {Object.keys(allConnections).length > 0 && (
               <div className="flex flex-col gap-4 w-xl">
                 <h1 className="text-2xl font-bold">Connections</h1>
                 <p className="text-sm text-muted-foreground">
                   Select a connection to view its databases.
                 </p>
+                <div className="flex flex-col gap-2">
+                  {Object.keys(allConnections).map(key => (
+                    <Button
+                      key={key}
+                      variant="outline"
+                      onClick={() => {
+                        selectConnection(key)
+                        setOpen(false)
+                      }}
+                    >
+                      {allConnections[key].name}
+                    </Button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {allConnections.length === 0 && (
+            {Object.keys(allConnections).length === 0 && (
               <div className="flex flex-col gap-4 w-xl text-center">
                 <h1 className="text-2xl font-bold">No connections found</h1>
                 <p className="text-sm text-muted-foreground">

@@ -1,14 +1,31 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 interface ConnectionsContextValue {
-  connection: string | undefined
-  allConnections: string[]
+  connectionId: string | undefined
+  connection:
+    | {
+        cs: string
+        name: string
+      }
+    | undefined
+  allConnections: {
+    [key: string]: {
+      cs: string
+      name: string
+    }
+  }
   isEncryptionAvailable: boolean
   checkEncryptionAvailability: () => Promise<boolean>
-  addConnection: (details: string) => Promise<void>
+  addConnection: ({
+    name,
+    connectionString,
+  }: {
+    name: string
+    connectionString: string
+  }) => Promise<void>
   removeConnection: (id: string) => Promise<void>
   updateConnection: (id: string, details: Partial<string>) => Promise<void>
-  selectConnection: (id: string) => void
+  selectConnection: (id?: string) => void
 }
 
 const ConnectionsContext = createContext<ConnectionsContextValue | undefined>(
@@ -21,10 +38,20 @@ export function ConnectionsProvider({
   children: React.ReactNode
 }) {
   const [connections, setConnections] = useState<{
-    [key: string]: string
+    [key: string]: {
+      cs: string
+      name: string
+    }
   }>({})
   const [selectedConnectionId, setSelectedConnectionId] = useState<
     string | undefined
+  >()
+  const [connection, setConnection] = useState<
+    | {
+        cs: string
+        name: string
+      }
+    | undefined
   >()
   const [isEncryptionAvailable, setIsEncryptionAvailable] = useState<
     'loading' | boolean
@@ -37,6 +64,12 @@ export function ConnectionsProvider({
       }
     })
   }, [])
+
+  useEffect(() => {
+    if (selectedConnectionId) {
+      setConnection(connections[selectedConnectionId])
+    }
+  }, [selectedConnectionId])
 
   useEffect(() => {
     checkEncryptionAvailability().then(isAvailable => {
@@ -52,11 +85,23 @@ export function ConnectionsProvider({
     return await window.App.safeStorage.isEncryptionAvailable()
   }
 
-  const addConnection = async (connectionString: string) => {
+  const addConnection = async ({
+    name,
+    connectionString,
+  }: {
+    name: string
+    connectionString: string
+  }) => {
     const key = await window.App.safeStorage.addConnection({
-      data: connectionString,
+      data: {
+        cs: connectionString,
+        name: name,
+      },
     })
-    const updatedConnections = { ...connections, [key]: connectionString }
+    const updatedConnections = {
+      ...connections,
+      [key]: { cs: connectionString, name: name },
+    }
     setConnections(updatedConnections)
   }
 
@@ -74,25 +119,35 @@ export function ConnectionsProvider({
   }
 
   const updateConnection = async (id: string, connectionString: string) => {
-    const updatedConnections = { ...connections, [id]: connectionString }
+    const updatedConnections = {
+      ...connections,
+      [id]: { cs: connectionString, name: connections[id].name },
+    }
     await window.App.safeStorage.updateConnection({
       key: id,
-      data: connectionString,
+      data: {
+        cs: connectionString,
+        name: connections[id].name,
+      },
     })
     setConnections(updatedConnections)
   }
 
-  const selectConnection = (id: string) => {
+  const selectConnection = (id?: string) => {
+    console.log('slectedConnectionId', selectedConnectionId)
     setSelectedConnectionId(id)
+  }
+
+  const decryptConnection = async (id: string) => {
+    return await window.App.safeStorage.decryptConnection({ key: id })
   }
 
   return (
     <ConnectionsContext.Provider
       value={{
-        connection: selectedConnectionId
-          ? connections[selectedConnectionId]
-          : undefined,
-        allConnections: Object.values(connections),
+        connectionId: selectedConnectionId,
+        connection: connection,
+        allConnections: connections,
         isEncryptionAvailable: isEncryptionAvailable === true,
         checkEncryptionAvailability,
         addConnection,

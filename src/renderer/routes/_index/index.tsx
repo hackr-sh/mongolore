@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
+import { useConnections } from 'renderer/providers/connections-provider'
 
-export const Route = createFileRoute("/_index/")({
+export const Route = createFileRoute('/_index/')({
   component: Index,
-});
+})
 
 function Index() {
+  const { connectionId, connection } = useConnections()
   return (
     <div className="p-2">
-      <h3>Welcome Home!</h3>
+      <pre className="text-xs">
+        {JSON.stringify({ connectionId, connection }, null, 2)}
+      </pre>
     </div>
-  );
+  )
 }

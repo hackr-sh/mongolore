@@ -23,15 +23,28 @@ const API = {
       ) as Promise<boolean>,
     getConnections: () =>
       ipcRenderer.invoke('safeStorage:getConnections') as Promise<{
-        [key: string]: string
+        [key: string]: {
+          cs: string
+          name: string
+        }
       }>,
-    addConnection: (data: { data: string }): Promise<string> =>
+    addConnection: (data: {
+      data: {
+        cs: string
+        name: string
+      }
+    }): Promise<string> =>
       ipcRenderer.invoke('safeStorage:addConnection', data),
     removeConnection: (data: { key: string }) =>
       ipcRenderer.invoke('safeStorage:removeConnection', data),
-    updateConnection: (data: { key: string; data: string }) =>
-      ipcRenderer.invoke('safeStorage:updateConnection', data),
-    decryptConnection: (data: { key: string }) =>
+    updateConnection: (data: {
+      key: string
+      data: {
+        cs: string
+        name: string
+      }
+    }) => ipcRenderer.invoke('safeStorage:updateConnection', data),
+    decryptConnection: (data: { key: string }): Promise<string> =>
       ipcRenderer.invoke('safeStorage:decryptConnection', data),
   },
 }
