@@ -95,12 +95,6 @@ ipcMain.handle(
     }
   ) => {
     const parsedConnections = getConnections()
-    console.log(parsedConnections, data.key)
-    console.log(
-      safeStorage.decryptString(
-        Buffer.from(parsedConnections[data.key], 'base64')
-      )
-    )
     if (parsedConnections[data.key]) {
       return safeStorage.decryptString(
         Buffer.from(parsedConnections[data.key], 'base64')
