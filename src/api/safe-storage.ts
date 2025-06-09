@@ -2,7 +2,16 @@ import { app, ipcMain, safeStorage } from 'electron'
 import path from 'node:path'
 import fs from 'node:fs'
 
+function useWeakerEncryptionIfNeeded() {
+  // TODO: we probably want to inform the user that the encryption is not available
+  if (safeStorage.isEncryptionAvailable()) {
+    return
+  }
+  safeStorage.setUsePlainTextEncryption(true)
+}
+
 function getConnections() {
+  useWeakerEncryptionIfNeeded()
   if (!fs.existsSync(path.join(app.getPath('userData'), 'connections.json'))) {
     fs.writeFileSync(
       path.join(app.getPath('userData'), 'connections.json'),
