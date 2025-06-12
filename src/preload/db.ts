@@ -1,11 +1,5 @@
 import { ipcRenderer } from 'electron'
-import type { Document } from 'mongodb'
-
-type Database = {
-  name: string
-  sizeOnDisk?: number
-  empty?: boolean
-} & Document
+import type { Database } from 'shared/models/database'
 
 export default {
   databases: {
