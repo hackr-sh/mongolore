@@ -1,9 +1,10 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { IntroWorkflow } from "renderer/components/intro-workflow";
-import { ThemeProvider } from "renderer/providers/theme-provider";
-import { Loader2Icon } from "lucide-react";
-import { ConfigProvider, useConfig } from "renderer/providers/config-provider";
-import { ConnectionsProvider } from "renderer/providers/connections-provider";
+import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { IntroWorkflow } from 'renderer/components/intro-workflow'
+import { ThemeProvider } from 'renderer/providers/theme-provider'
+import { Loader2Icon } from 'lucide-react'
+import { ConfigProvider, useConfig } from 'renderer/providers/config-provider'
+import { ConnectionsProvider } from 'renderer/providers/connections-provider'
+import { DatabaseProvider } from 'renderer/providers/database-provider'
 
 export const Route = createRootRoute({
   component: () => {
@@ -11,26 +12,28 @@ export const Route = createRootRoute({
       <ConfigProvider>
         <ThemeProvider>
           <ConnectionsProvider>
-            <RootComponent />
+            <DatabaseProvider>
+              <RootComponent />
+            </DatabaseProvider>
           </ConnectionsProvider>
         </ThemeProvider>
       </ConfigProvider>
-    );
+    )
   },
-});
+})
 
 const RootComponent = () => {
-  const { config, createConfigIfNotExists } = useConfig();
+  const { config, createConfigIfNotExists } = useConfig()
 
   return (
     <>
       <div
         className="w-full h-8 pointer-events-none fixed top-0 left-0 z-[9999]"
         style={
-          { "-webkit-app-region": "drag" } as unknown as React.CSSProperties
+          { '-webkit-app-region': 'drag' } as unknown as React.CSSProperties
         }
       />
-      {config === "loading" ? (
+      {config === 'loading' ? (
         <div className="flex h-screen w-screen items-center justify-center">
           <Loader2Icon className="h-10 w-10 animate-spin" />
         </div>
@@ -39,10 +42,10 @@ const RootComponent = () => {
       ) : (
         <IntroWorkflow
           onDone={() => {
-            createConfigIfNotExists();
+            createConfigIfNotExists()
           }}
         />
       )}
     </>
-  );
-};
+  )
+}
