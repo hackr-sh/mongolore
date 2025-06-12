@@ -26,7 +26,7 @@ export default function ComplexSelect({
         <SelectTrigger id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
           {options.map(option => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
