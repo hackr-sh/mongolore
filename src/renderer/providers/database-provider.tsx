@@ -63,7 +63,10 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
           connectionId,
           databaseName: selectedDatabase.name,
         })
-        .then(setCollections)
+        .then(collections => {
+          setCollections(collections)
+          setSelectedCollection(collections[0] ?? null)
+        })
         .catch(error => {
           console.error(error)
           setCollections([])
