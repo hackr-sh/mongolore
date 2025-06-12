@@ -35,7 +35,7 @@ export const ConnectionsDialog = () => {
     if (editingConnectionId) {
       setEditingName(allConnections[editingConnectionId].name)
       setEditingConnectionString('decrypting...')
-      window.App.safeStorage
+      window.App.connections
         .decryptConnection({
           key: editingConnectionId,
         })

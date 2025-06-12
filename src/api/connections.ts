@@ -38,16 +38,16 @@ function getConnections() {
   }
 }
 
-ipcMain.handle('safeStorage:isEncryptionAvailable', async () => {
+ipcMain.handle('connections:isEncryptionAvailable', async () => {
   return safeStorage.isEncryptionAvailable()
 })
 
-ipcMain.handle('safeStorage:getConnections', async () => {
+ipcMain.handle('connections:getConnections', async () => {
   return getConnections()
 })
 
 ipcMain.handle(
-  'safeStorage:addConnection',
+  'connections:addConnection',
   async (
     event,
     data: {
@@ -73,7 +73,7 @@ ipcMain.handle(
 )
 
 ipcMain.handle(
-  'safeStorage:removeConnection',
+  'connections:removeConnection',
   async (
     event,
     data: {
@@ -90,7 +90,7 @@ ipcMain.handle(
 )
 
 ipcMain.handle(
-  'safeStorage:updateConnection',
+  'connections:updateConnection',
   async (
     event,
     data: {
@@ -120,7 +120,7 @@ ipcMain.handle(
 )
 
 ipcMain.handle(
-  'safeStorage:decryptConnection',
+  'connections:decryptConnection',
   async (
     event,
     data: {

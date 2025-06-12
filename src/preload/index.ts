@@ -17,13 +17,13 @@ const API = {
     createConfigFileIfNotExists: () =>
       ipcRenderer.invoke('settings:createConfigFileIfNotExists'),
   },
-  safeStorage: {
+  connections: {
     isEncryptionAvailable: () =>
       ipcRenderer.invoke(
-        'safeStorage:isEncryptionAvailable'
+        'connections:isEncryptionAvailable'
       ) as Promise<boolean>,
     getConnections: () =>
-      ipcRenderer.invoke('safeStorage:getConnections') as Promise<{
+      ipcRenderer.invoke('connections:getConnections') as Promise<{
         [key: string]: {
           cs: string
           name: string
@@ -35,9 +35,9 @@ const API = {
         name: string
       }
     }): Promise<{ key: string; encryptedConnectionString: string }> =>
-      ipcRenderer.invoke('safeStorage:addConnection', data),
+      ipcRenderer.invoke('connections:addConnection', data),
     removeConnection: (data: { key: string }) =>
-      ipcRenderer.invoke('safeStorage:removeConnection', data),
+      ipcRenderer.invoke('connections:removeConnection', data),
     updateConnection: (data: {
       key: string
       data: {
@@ -45,9 +45,9 @@ const API = {
         name: string
       }
     }): Promise<{ [key: string]: { cs: string; name: string } }> =>
-      ipcRenderer.invoke('safeStorage:updateConnection', data),
+      ipcRenderer.invoke('connections:updateConnection', data),
     decryptConnection: (data: { key: string }): Promise<string> =>
-      ipcRenderer.invoke('safeStorage:decryptConnection', data),
+      ipcRenderer.invoke('connections:decryptConnection', data),
   },
   db: db,
 }

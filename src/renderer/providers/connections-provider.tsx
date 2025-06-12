@@ -64,7 +64,7 @@ export function ConnectionsProvider({
   >(false)
 
   useEffect(() => {
-    window.App.safeStorage.getConnections().then(savedConnections => {
+    window.App.connections.getConnections().then(savedConnections => {
       if (savedConnections) {
         setConnections(savedConnections)
       }
@@ -88,7 +88,7 @@ export function ConnectionsProvider({
   }, [])
 
   const checkEncryptionAvailability = async () => {
-    return await window.App.safeStorage.isEncryptionAvailable()
+    return await window.App.connections.isEncryptionAvailable()
   }
 
   const addConnection = async ({
@@ -99,7 +99,7 @@ export function ConnectionsProvider({
     connectionString: string
   }) => {
     const { key, encryptedConnectionString } =
-      await window.App.safeStorage.addConnection({
+      await window.App.connections.addConnection({
         data: {
           cs: connectionString,
           name: name,
@@ -113,7 +113,7 @@ export function ConnectionsProvider({
   }
 
   const removeConnection = async (id: string) => {
-    await window.App.safeStorage.removeConnection({
+    await window.App.connections.removeConnection({
       key: id,
     })
     const updatedConnections = { ...connections }
@@ -138,7 +138,7 @@ export function ConnectionsProvider({
     if (!details.name) {
       throw new Error('Name is required')
     }
-    const updatedConnections = await window.App.safeStorage.updateConnection({
+    const updatedConnections = await window.App.connections.updateConnection({
       key: id,
       data: {
         cs: details.connectionString,
@@ -153,7 +153,7 @@ export function ConnectionsProvider({
   }
 
   const decryptConnection = async (id: string) => {
-    return await window.App.safeStorage.decryptConnection({ key: id })
+    return await window.App.connections.decryptConnection({ key: id })
   }
 
   return (
