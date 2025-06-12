@@ -20,7 +20,10 @@ export const MasterDetail = ({
     connectionLoading,
     databases,
     selectedDatabase,
+    collections,
+    selectedCollection,
     setSelectedDatabase,
+    setSelectedCollection,
   } = useDatabase()
   return (
     <div className="flex flex-col h-full w-full">
@@ -33,26 +36,49 @@ export const MasterDetail = ({
         </h1>
       </div>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel className="p-4 mt-4" defaultSize={20}>
+        <ResizablePanel
+          className="p-4 mt-4 flex flex-row gap-4"
+          defaultSize={20}
+        >
           {connectionLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader2Icon className="h-10 w-10 animate-spin" />
             </div>
           ) : (
-            <ComplexSelect
-              label="Database"
-              placeholder="Select a database"
-              options={databases.map(db => ({
-                label: db.name,
-                value: db.name,
-              }))}
-              value={selectedDatabase?.name}
-              onValueChange={value => {
-                setSelectedDatabase(
-                  databases.find(db => db.name === value) ?? null
-                )
-              }}
-            />
+            <>
+              <div className="flex flex-row gap-2 items-center h-fit">
+                <ComplexSelect
+                  placeholder="Select a database"
+                  triggerClassName="border-0 hover:bg-input"
+                  options={databases.map(db => ({
+                    label: db.name,
+                    value: db.name,
+                  }))}
+                  value={selectedDatabase?.name}
+                  onValueChange={value => {
+                    setSelectedDatabase(
+                      databases.find(db => db.name === value) ?? null
+                    )
+                  }}
+                />
+                /
+                <ComplexSelect
+                  disabled={!selectedDatabase}
+                  triggerClassName="border-0 hover:bg-input"
+                  placeholder="Select a collection"
+                  options={collections.map(col => ({
+                    label: col.name,
+                    value: col.name,
+                  }))}
+                  value={selectedCollection?.name}
+                  onValueChange={value => {
+                    setSelectedCollection(
+                      collections.find(col => col.name === value) ?? null
+                    )
+                  }}
+                />
+              </div>
+            </>
           )}
         </ResizablePanel>
         <ResizableHandle />
