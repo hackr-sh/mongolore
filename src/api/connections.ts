@@ -10,6 +10,14 @@ function useWeakerEncryptionIfNeeded() {
   safeStorage.setUsePlainTextEncryption(true)
 }
 
+export function getConnectionStringFromKey(key: string) {
+  const connections = getConnections()
+  if (!connections[key]) {
+    throw new Error('Connection not found')
+  }
+  return safeStorage.decryptString(Buffer.from(connections[key].cs, 'base64'))
+}
+
 function getConnections() {
   useWeakerEncryptionIfNeeded()
   if (!fs.existsSync(path.join(app.getPath('userData'), 'connections.json'))) {
