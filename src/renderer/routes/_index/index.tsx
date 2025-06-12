@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useConnections } from 'renderer/providers/connections-provider'
+import { useDatabase } from 'renderer/providers/database-provider'
 
 export const Route = createFileRoute('/_index/')({
   component: Index,
@@ -7,10 +8,13 @@ export const Route = createFileRoute('/_index/')({
 
 function Index() {
   const { connectionId, connection } = useConnections()
+  const { databases } = useDatabase()
   return (
     <div className="relative h-full w-full">
       <pre className="text-xs absolute top-0 left-0 w-full h-full">
         {JSON.stringify({ connectionId, connection }, null, 2)}
+        <br />
+        {JSON.stringify(databases, null, 2)}
       </pre>
 
       <div className="flex flex-col h-full w-full justify-center items-center">
