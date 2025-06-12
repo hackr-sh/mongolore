@@ -6,6 +6,8 @@ export default {
     listDatabases: (data: {
       connectionId: string
     }): Promise<Database[]> =>
-      ipcRenderer.invoke('db:listDatabases', data) as Promise<Database[]>,
+      ipcRenderer.invoke('db:databases:listDatabases', data) as Promise<
+        Database[]
+      >,
   },
 }
