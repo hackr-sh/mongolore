@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useConnections } from 'renderer/providers/connections-provider'
 import { Button } from './ui/button'
-import { EditIcon, XIcon } from 'lucide-react'
+import { EditIcon, TrashIcon, XIcon } from 'lucide-react'
 import ComplexInput from './complex-input'
 import { Separator } from './ui/separator'
 
@@ -12,6 +12,7 @@ export const ConnectionsDialog = () => {
     selectConnection,
     connectionId,
     updateConnection,
+    removeConnection,
   } = useConnections()
   const [open, setOpen] = useState(false)
   const [connectionString, setConnectionString] = useState('')
@@ -168,21 +169,39 @@ export const ConnectionsDialog = () => {
                     setEditingConnectionString(e.target.value)
                   }}
                 />
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (!editingName || !editingConnectionString) {
-                      return
-                    }
-                    updateConnection(editingConnectionId, {
-                      name: editingName,
-                      connectionString: editingConnectionString,
-                    })
-                    setEditingConnectionId(null)
-                  }}
-                >
-                  Update {editingName}
-                </Button>
+                <div className="flex flex-row gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      if (!editingName || !editingConnectionString) {
+                        return
+                      }
+                      updateConnection(editingConnectionId, {
+                        name: editingName,
+                        connectionString: editingConnectionString,
+                      })
+                      setEditingConnectionId(null)
+                    }}
+                  >
+                    Update {editingName}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setEditingConnectionId(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      removeConnection(editingConnectionId)
+                      setEditingConnectionId(null)
+                    }}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </div>
               </div>
             )}
 
