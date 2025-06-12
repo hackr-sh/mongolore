@@ -8,6 +8,7 @@ import { useConnections } from 'renderer/providers/connections-provider'
 import { Button } from './ui/button'
 import { ArrowLeftRightIcon, Loader2Icon } from 'lucide-react'
 import { useDatabase } from 'renderer/providers/database-provider'
+import ComplexSelect from './complex-select'
 
 export const MasterDetail = ({
   openConnectionsDialog,
@@ -15,7 +16,12 @@ export const MasterDetail = ({
   openConnectionsDialog: () => void
 }) => {
   const { connection } = useConnections()
-  const { connectionLoading } = useDatabase()
+  const {
+    connectionLoading,
+    databases,
+    selectedDatabase,
+    setSelectedDatabase,
+  } = useDatabase()
   return (
     <div className="flex flex-col h-full w-full">
       <div className="w-full pt-8 p-4 border-border border-b flex flex-row gap-4">
@@ -33,7 +39,20 @@ export const MasterDetail = ({
               <Loader2Icon className="h-10 w-10 animate-spin" />
             </div>
           ) : (
-            'Master'
+            <ComplexSelect
+              label="Database"
+              placeholder="Select a database"
+              options={databases.map(db => ({
+                label: db.name,
+                value: db.name,
+              }))}
+              value={selectedDatabase?.name}
+              onValueChange={value => {
+                setSelectedDatabase(
+                  databases.find(db => db.name === value) ?? null
+                )
+              }}
+            />
           )}
         </ResizablePanel>
         <ResizableHandle />

@@ -11,6 +11,8 @@ import { useConnections } from './connections-provider'
 interface DatabaseContextType {
   databases: Database[]
   connectionLoading: boolean
+  selectedDatabase: Database | null
+  setSelectedDatabase: React.Dispatch<React.SetStateAction<Database | null>>
 }
 
 const DatabaseContext = createContext<DatabaseContextType | undefined>(
@@ -20,6 +22,9 @@ const DatabaseContext = createContext<DatabaseContextType | undefined>(
 export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
   const [databases, setDatabases] = useState<Database[]>([])
   const [connectionLoading, setConnectionLoading] = useState(false)
+  const [selectedDatabase, setSelectedDatabase] = useState<Database | null>(
+    null
+  )
   const { connectionId } = useConnections()
   useEffect(() => {
     if (connectionId) {
@@ -42,6 +47,8 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
   const value: DatabaseContextType = {
     databases,
     connectionLoading,
+    selectedDatabase,
+    setSelectedDatabase,
   }
 
   return (

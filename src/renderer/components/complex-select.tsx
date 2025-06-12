@@ -13,16 +13,17 @@ export default function ComplexSelect({
   label,
   placeholder,
   options,
+  ...props
 }: {
   label: string
   placeholder: string
   options: { label: string; value: string }[]
-}) {
+} & React.ComponentProps<typeof Select>) {
   const id = useId()
   return (
     <div className="*:not-first:mt-2">
       <Label htmlFor={id}>{label}</Label>
-      <Select>
+      <Select {...props}>
         <SelectTrigger id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
