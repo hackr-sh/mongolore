@@ -10,7 +10,7 @@ export const MasterDetail = () => {
   const { connection } = useConnections()
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="w-full pt-6 p-4 border-border border-b">
+      <div className="w-full pt-8 p-4 border-border border-b">
         <h1 className="text-2xl font-bold">
           {connection?.name ?? 'No connection selected'}
         </h1>
