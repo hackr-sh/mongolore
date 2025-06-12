@@ -5,7 +5,13 @@ import { EditIcon, TrashIcon, XIcon } from 'lucide-react'
 import ComplexInput from './complex-input'
 import { Separator } from './ui/separator'
 
-export const ConnectionsDialog = () => {
+export const ConnectionsDialog = ({
+  open,
+  setOpen,
+}: {
+  open: boolean
+  setOpen: (open: boolean) => void
+}) => {
   const {
     allConnections,
     addConnection,
@@ -14,7 +20,7 @@ export const ConnectionsDialog = () => {
     updateConnection,
     removeConnection,
   } = useConnections()
-  const [open, setOpen] = useState(false)
+
   const [connectionString, setConnectionString] = useState('')
   const [name, setName] = useState('')
   const [editingName, setEditingName] = useState('')
