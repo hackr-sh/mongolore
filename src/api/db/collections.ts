@@ -2,7 +2,7 @@ import { ipcMain } from 'electron'
 import { getClient } from 'api/db/general'
 
 ipcMain.handle(
-  'db:listCollections',
+  'db:collections:listCollections',
   async (
     event,
     {
