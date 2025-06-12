@@ -6,7 +6,8 @@ import {
 } from 'renderer/components/ui/resizable'
 import { useConnections } from 'renderer/providers/connections-provider'
 import { Button } from './ui/button'
-import { ArrowLeftRightIcon } from 'lucide-react'
+import { ArrowLeftRightIcon, Loader2Icon } from 'lucide-react'
+import { useDatabase } from 'renderer/providers/database-provider'
 
 export const MasterDetail = ({
   openConnectionsDialog,
@@ -14,6 +15,7 @@ export const MasterDetail = ({
   openConnectionsDialog: () => void
 }) => {
   const { connection } = useConnections()
+  const { connectionLoading } = useDatabase()
   return (
     <div className="flex flex-col h-full w-full">
       <div className="w-full pt-8 p-4 border-border border-b flex flex-row gap-4">
@@ -26,11 +28,23 @@ export const MasterDetail = ({
       </div>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel className="p-4 mt-4" defaultSize={20}>
-          Master
+          {connectionLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2Icon className="h-10 w-10 animate-spin" />
+            </div>
+          ) : (
+            'Master'
+          )}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel className="p-4 mt-4">
-          <Outlet />
+          {connectionLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2Icon className="h-10 w-10 animate-spin" />
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
