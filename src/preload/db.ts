@@ -1,5 +1,5 @@
-import type { Document } from 'bson'
 import { ipcRenderer } from 'electron'
+import type { Document } from 'mongodb'
 
 type Database = {
   name: string
@@ -8,6 +8,10 @@ type Database = {
 } & Document
 
 export default {
-  listDatabases: (connectionId: string): Promise<Database[]> =>
-    ipcRenderer.invoke('db:listDatabases', connectionId) as Promise<Database[]>,
+  databases: {
+    listDatabases: (connectionId: string): Promise<Database[]> =>
+      ipcRenderer.invoke('db:listDatabases', connectionId) as Promise<
+        Database[]
+      >,
+  },
 }
