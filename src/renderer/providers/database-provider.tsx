@@ -30,7 +30,7 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
     if (connectionId) {
       setConnectionLoading(true)
       window.App.db.databases
-        .listDatabases(connectionId)
+        .listDatabases({ connectionId })
         .then(setDatabases)
         .catch(error => {
           console.error(error)
