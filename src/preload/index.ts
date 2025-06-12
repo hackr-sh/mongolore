@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { MongoloreConfig } from 'shared/models/mongolore-config'
+import db from './db'
 
 declare global {
   interface Window {
@@ -48,6 +49,7 @@ const API = {
     decryptConnection: (data: { key: string }): Promise<string> =>
       ipcRenderer.invoke('safeStorage:decryptConnection', data),
   },
+  db: db,
 }
 
 contextBridge.exposeInMainWorld('App', API)
