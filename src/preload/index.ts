@@ -33,7 +33,7 @@ const API = {
         cs: string
         name: string
       }
-    }): Promise<string> =>
+    }): Promise<{ key: string; encryptedConnectionString: string }> =>
       ipcRenderer.invoke('safeStorage:addConnection', data),
     removeConnection: (data: { key: string }) =>
       ipcRenderer.invoke('safeStorage:removeConnection', data),

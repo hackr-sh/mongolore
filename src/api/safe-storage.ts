@@ -60,7 +60,7 @@ ipcMain.handle(
       path.join(app.getPath('userData'), 'connections.json'),
       JSON.stringify(parsedConnections, null, 2)
     )
-    return key
+    return { key, encryptedConnectionString: buffer.toString('base64') }
   }
 )
 

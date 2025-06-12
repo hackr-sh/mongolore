@@ -92,15 +92,16 @@ export function ConnectionsProvider({
     name: string
     connectionString: string
   }) => {
-    const key = await window.App.safeStorage.addConnection({
-      data: {
-        cs: connectionString,
-        name: name,
-      },
-    })
+    const { key, encryptedConnectionString } =
+      await window.App.safeStorage.addConnection({
+        data: {
+          cs: connectionString,
+          name: name,
+        },
+      })
     const updatedConnections = {
       ...connections,
-      [key]: { cs: connectionString, name: name },
+      [key]: { cs: encryptedConnectionString, name: name },
     }
     setConnections(updatedConnections)
   }
