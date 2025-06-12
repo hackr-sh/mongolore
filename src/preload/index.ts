@@ -43,7 +43,8 @@ const API = {
         cs: string
         name: string
       }
-    }) => ipcRenderer.invoke('safeStorage:updateConnection', data),
+    }): Promise<{ [key: string]: { cs: string; name: string } }> =>
+      ipcRenderer.invoke('safeStorage:updateConnection', data),
     decryptConnection: (data: { key: string }): Promise<string> =>
       ipcRenderer.invoke('safeStorage:decryptConnection', data),
   },

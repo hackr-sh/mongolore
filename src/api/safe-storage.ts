@@ -98,7 +98,7 @@ ipcMain.handle(
     if (parsedConnections[data.key]) {
       parsedConnections[data.key] = {
         cs: buffer.toString('base64'),
-        name: parsedConnections[data.key].name,
+        name: data.data.name,
       }
     } else {
       throw new Error('Connection not found')
@@ -107,6 +107,7 @@ ipcMain.handle(
       path.join(app.getPath('userData'), 'connections.json'),
       JSON.stringify(parsedConnections, null, 2)
     )
+    return parsedConnections
   }
 )
 

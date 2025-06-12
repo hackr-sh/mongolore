@@ -24,7 +24,13 @@ interface ConnectionsContextValue {
     connectionString: string
   }) => Promise<void>
   removeConnection: (id: string) => Promise<void>
-  updateConnection: (id: string, details: Partial<string>) => Promise<void>
+  updateConnection: (
+    id: string,
+    details: Partial<{
+      name: string
+      connectionString: string
+    }>
+  ) => Promise<void>
   selectConnection: (id?: string) => void
 }
 
@@ -119,23 +125,30 @@ export function ConnectionsProvider({
     }
   }
 
-  const updateConnection = async (id: string, connectionString: string) => {
-    const updatedConnections = {
-      ...connections,
-      [id]: { cs: connectionString, name: connections[id].name },
+  const updateConnection = async (
+    id: string,
+    details: Partial<{
+      name: string
+      connectionString: string
+    }>
+  ) => {
+    if (!details.connectionString) {
+      throw new Error('Connection string is required')
     }
-    await window.App.safeStorage.updateConnection({
+    if (!details.name) {
+      throw new Error('Name is required')
+    }
+    const updatedConnections = await window.App.safeStorage.updateConnection({
       key: id,
       data: {
-        cs: connectionString,
-        name: connections[id].name,
+        cs: details.connectionString,
+        name: details.name,
       },
     })
     setConnections(updatedConnections)
   }
 
   const selectConnection = (id?: string) => {
-    console.log('slectedConnectionId', selectedConnectionId)
     setSelectedConnectionId(id)
   }
 

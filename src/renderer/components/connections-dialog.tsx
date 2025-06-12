@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react'
 import { useConnections } from 'renderer/providers/connections-provider'
 import { Button } from './ui/button'
-import { XIcon } from 'lucide-react'
+import { EditIcon, XIcon } from 'lucide-react'
 import ComplexInput from './complex-input'
+import { Separator } from './ui/separator'
 
 export const ConnectionsDialog = () => {
-  const { allConnections, addConnection, selectConnection, connectionId } =
-    useConnections()
+  const {
+    allConnections,
+    addConnection,
+    selectConnection,
+    connectionId,
+    updateConnection,
+  } = useConnections()
   const [open, setOpen] = useState(false)
   const [connectionString, setConnectionString] = useState('')
   const [name, setName] = useState('')
+  const [editingName, setEditingName] = useState('')
+  const [editingConnectionString, setEditingConnectionString] =
+    useState('decrypting...')
+  const [editingConnectionId, setEditingConnectionId] = useState<string | null>(
+    null
+  )
   const [newConnectionStep, setNewConnectionStep] = useState(false)
 
   useEffect(() => {
@@ -17,6 +29,20 @@ export const ConnectionsDialog = () => {
       setOpen(true)
     }
   }, [connectionId])
+
+  useEffect(() => {
+    if (editingConnectionId) {
+      setEditingName(allConnections[editingConnectionId].name)
+      setEditingConnectionString('decrypting...')
+      window.App.safeStorage
+        .decryptConnection({
+          key: editingConnectionId,
+        })
+        .then(connectionString => {
+          setEditingConnectionString(connectionString)
+        })
+    }
+  }, [editingConnectionId])
 
   if (!open) return null
 
@@ -32,7 +58,7 @@ export const ConnectionsDialog = () => {
         </Button>
       )}
       <div className="w-full h-full flex items-center justify-center flex-col gap-4">
-        {newConnectionStep && (
+        {newConnectionStep && !editingConnectionId && (
           <div className="flex flex-col gap-4 w-xl">
             <h1 className="text-2xl font-bold">Add a new connection</h1>
             <p className="text-sm text-muted-foreground">
@@ -80,26 +106,83 @@ export const ConnectionsDialog = () => {
 
         {!newConnectionStep && (
           <>
-            {Object.keys(allConnections).length > 0 && (
+            {Object.keys(allConnections).length > 0 && !editingConnectionId && (
               <div className="flex flex-col gap-4 w-xl">
                 <h1 className="text-2xl font-bold">Connections</h1>
                 <p className="text-sm text-muted-foreground">
-                  Select a connection to view its databases.
+                  Select a connection to query its collections.
                 </p>
                 <div className="flex flex-col gap-2">
                   {Object.keys(allConnections).map(key => (
-                    <Button
-                      key={key}
-                      variant="outline"
-                      onClick={() => {
-                        selectConnection(key)
-                        setOpen(false)
-                      }}
-                    >
-                      {allConnections[key].name}
-                    </Button>
+                    <div className="flex flex-row gap-2" key={key}>
+                      <Button
+                        variant="ghost"
+                        className="flex-1 justify-start"
+                        onClick={() => {
+                          selectConnection(key)
+                          setOpen(false)
+                        }}
+                      >
+                        {allConnections[key].name}
+                      </Button>
+                      <Separator orientation="vertical" />
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingConnectionId(key)
+                        }}
+                      >
+                        <EditIcon />
+                      </Button>
+                    </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {editingConnectionId && (
+              <div className="flex flex-col gap-4 w-xl">
+                <h1 className="text-2xl font-bold">Edit connection</h1>
+                <p className="text-sm text-muted-foreground">
+                  Edit the name and connection string for your connection.
+                </p>
+                <ComplexInput
+                  className="w-full"
+                  label="Name"
+                  placeholder="My Mongo Database"
+                  type="text"
+                  value={editingName}
+                  onChange={e => {
+                    setEditingName(e.target.value)
+                  }}
+                />
+                <ComplexInput
+                  disabled={editingConnectionString === 'decrypting...'}
+                  className="w-full"
+                  label="Connection String"
+                  placeholder="username:password@localhost:27017/database"
+                  type="text"
+                  prefix="mongodb://"
+                  value={editingConnectionString.replace('mongodb://', '')}
+                  onChange={e => {
+                    setEditingConnectionString(e.target.value)
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (!editingName || !editingConnectionString) {
+                      return
+                    }
+                    updateConnection(editingConnectionId, {
+                      name: editingName,
+                      connectionString: editingConnectionString,
+                    })
+                    setEditingConnectionId(null)
+                  }}
+                >
+                  Update {editingName}
+                </Button>
               </div>
             )}
 
@@ -112,12 +195,14 @@ export const ConnectionsDialog = () => {
               </div>
             )}
 
-            <Button
-              variant="outline"
-              onClick={() => setNewConnectionStep(true)}
-            >
-              Add a new connection
-            </Button>
+            {!editingConnectionId && (
+              <Button
+                variant="outline"
+                onClick={() => setNewConnectionStep(true)}
+              >
+                Add a new connection
+              </Button>
+            )}
           </>
         )}
       </div>
