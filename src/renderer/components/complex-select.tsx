@@ -15,14 +15,14 @@ export default function ComplexSelect({
   options,
   ...props
 }: {
-  label: string
+  label?: string
   placeholder: string
   options: { label: string; value: string }[]
 } & React.ComponentProps<typeof Select>) {
   const id = useId()
   return (
     <div className="*:not-first:mt-2">
-      <Label htmlFor={id}>{label}</Label>
+      {label && <Label htmlFor={id}>{label}</Label>}
       <Select {...props}>
         <SelectTrigger id={id}>
           <SelectValue placeholder={placeholder} />
