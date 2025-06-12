@@ -9,6 +9,7 @@ import { Button } from './ui/button'
 import { ArrowLeftRightIcon, Loader2Icon } from 'lucide-react'
 import { useDatabase } from 'renderer/providers/database-provider'
 import ComplexSelect from './complex-select'
+import { cn } from 'renderer/lib/utils'
 
 export const MasterDetail = ({
   openConnectionsDialog,
@@ -36,47 +37,45 @@ export const MasterDetail = ({
         </h1>
       </div>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel
-          className="p-4 mt-4 flex flex-row gap-4"
-          defaultSize={20}
-        >
+        <ResizablePanel className="p-4 flex flex-col gap-4" defaultSize={20}>
           {connectionLoading ? (
             <div className="flex items-center justify-center h-full">
               <Loader2Icon className="h-10 w-10 animate-spin" />
             </div>
           ) : (
             <>
-              <div className="flex flex-row gap-2 items-center h-fit">
-                <ComplexSelect
-                  placeholder="Select a database"
-                  triggerClassName="border-0 hover:bg-input"
-                  options={databases.map(db => ({
-                    label: db.name,
-                    value: db.name,
-                  }))}
-                  value={selectedDatabase?.name}
-                  onValueChange={value => {
-                    setSelectedDatabase(
-                      databases.find(db => db.name === value) ?? null
-                    )
-                  }}
-                />
-                /
-                <ComplexSelect
-                  disabled={!selectedDatabase}
-                  triggerClassName="border-0 hover:bg-input"
-                  placeholder="Select a collection"
-                  options={collections.map(col => ({
-                    label: col.name,
-                    value: col.name,
-                  }))}
-                  value={selectedCollection?.name}
-                  onValueChange={value => {
-                    setSelectedCollection(
-                      collections.find(col => col.name === value) ?? null
-                    )
-                  }}
-                />
+              <ComplexSelect
+                placeholder="Select a database"
+                triggerClassName="border-0 hover:bg-input transition-colors"
+                options={databases.map(db => ({
+                  label: db.name,
+                  value: db.name,
+                }))}
+                value={selectedDatabase?.name}
+                onValueChange={value => {
+                  setSelectedDatabase(
+                    databases.find(db => db.name === value) ?? null
+                  )
+                }}
+              />
+              <div className="flex flex-col gap-1 mt-4">
+                {collections.map(collection => (
+                  <Button
+                    size="sm"
+                    key={collection.name}
+                    variant="ghost"
+                    className={cn(
+                      'w-full justify-start p-3 text-sm transition-colors',
+                      selectedCollection?.name === collection.name &&
+                        'bg-input text-primary hover:bg-input'
+                    )}
+                    onClick={() => {
+                      setSelectedCollection(collection)
+                    }}
+                  >
+                    {collection.name}
+                  </Button>
+                ))}
               </div>
             </>
           )}
