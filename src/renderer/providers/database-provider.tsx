@@ -10,6 +10,7 @@ import { useConnections } from './connections-provider'
 
 interface DatabaseContextType {
   databases: Database[]
+  loading: boolean
 }
 
 const DatabaseContext = createContext<DatabaseContextType | undefined>(
@@ -18,10 +19,21 @@ const DatabaseContext = createContext<DatabaseContextType | undefined>(
 
 export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
   const [databases, setDatabases] = useState<Database[]>([])
+  const [loading, setLoading] = useState(false)
   const { connectionId } = useConnections()
   useEffect(() => {
     if (connectionId) {
-      window.App.db.databases.listDatabases(connectionId).then(setDatabases)
+      setLoading(true)
+      window.App.db.databases
+        .listDatabases(connectionId)
+        .then(setDatabases)
+        .catch(error => {
+          console.error(error)
+          setDatabases([])
+        })
+        .finally(() => {
+          setLoading(false)
+        })
     } else {
       setDatabases([])
     }
@@ -29,6 +41,7 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
 
   const value: DatabaseContextType = {
     databases,
+    loading,
   }
 
   return (
