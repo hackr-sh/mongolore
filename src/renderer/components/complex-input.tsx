@@ -14,7 +14,7 @@ export default function ComplexInput({
   className,
   ...props
 }: {
-  label: string
+  label?: string
   placeholder: string
   type: string
   prefix?: string
