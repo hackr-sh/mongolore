@@ -82,7 +82,7 @@ export const MasterDetail = ({
                   open={newCollectionDialogOpen}
                   onOpenChange={setNewCollectionDialogOpen}
                 >
-                  <DialogTrigger>
+                  <DialogTrigger asChild>
                     <Button
                       onClick={() => setNewCollectionDialogOpen(true)}
                       variant="outline"
