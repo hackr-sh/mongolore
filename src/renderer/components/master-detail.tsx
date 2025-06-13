@@ -6,16 +6,33 @@ import {
 } from 'renderer/components/ui/resizable'
 import { useConnections } from 'renderer/providers/connections-provider'
 import { Button } from './ui/button'
-import { ArrowLeftRightIcon, Loader2Icon } from 'lucide-react'
+import { ArrowLeftRightIcon, Loader2Icon, PlusIcon } from 'lucide-react'
 import { useDatabase } from 'renderer/providers/database-provider'
 import ComplexSelect from './complex-select'
 import { cn } from 'renderer/lib/utils'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
+import ComplexInput from './complex-input'
+import { useEffect, useState } from 'react'
 
 export const MasterDetail = ({
   openConnectionsDialog,
 }: {
   openConnectionsDialog: () => void
 }) => {
+  const [newCollectionDialogOpen, setNewCollectionDialogOpen] = useState(false)
+  const [newCollectionName, setNewCollectionName] = useState('')
+  const [newDatabaseName, setNewDatabaseName] = useState('')
+  const [newDatabaseOption, setNewDatabaseOption] = useState<string | null>(
+    null
+  )
+
   const { connection } = useConnections()
   const {
     connectionLoading,
@@ -25,7 +42,23 @@ export const MasterDetail = ({
     selectedCollection,
     setSelectedDatabase,
     setSelectedCollection,
+    createCollection,
   } = useDatabase()
+
+  useEffect(() => {
+    if (newDatabaseOption === 'create-new-database') {
+      setNewDatabaseName('')
+    } else {
+      setNewDatabaseName(newDatabaseOption ?? '')
+    }
+  }, [newDatabaseOption])
+
+  useEffect(() => {
+    setNewCollectionName('')
+    setNewDatabaseOption(null)
+    setNewDatabaseName('')
+  }, [newCollectionDialogOpen])
+
   return (
     <div className="flex flex-col h-full w-full">
       <div className="w-full pt-8 p-4 border-border border-b flex flex-row gap-4">
@@ -44,20 +77,93 @@ export const MasterDetail = ({
             </div>
           ) : (
             <>
-              <ComplexSelect
-                placeholder="Select a database"
-                triggerClassName="border-0 hover:bg-input transition-colors"
-                options={databases.map(db => ({
-                  label: db.name,
-                  value: db.name,
-                }))}
-                value={selectedDatabase?.name}
-                onValueChange={value => {
-                  setSelectedDatabase(
-                    databases.find(db => db.name === value) ?? null
-                  )
-                }}
-              />
+              <div className="flex flex-row gap-2">
+                <Dialog
+                  open={newCollectionDialogOpen}
+                  onOpenChange={setNewCollectionDialogOpen}
+                >
+                  <DialogTrigger>
+                    <Button
+                      onClick={() => setNewCollectionDialogOpen(true)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <PlusIcon className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create a new collection</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-row gap-2 items-center *:flex-1">
+                      {newDatabaseOption === 'create-new-database' ? (
+                        <ComplexInput
+                          placeholder="Enter database name"
+                          type="text"
+                          value={newDatabaseName}
+                          onChange={e => {
+                            setNewDatabaseName(e.target.value)
+                          }}
+                        />
+                      ) : (
+                        <ComplexSelect
+                          placeholder="Select a database"
+                          triggerClassName="border-0 hover:bg-input transition-colors"
+                          options={databases
+                            .map(db => ({
+                              label: db.name,
+                              value: db.name,
+                            }))
+                            .concat({
+                              label: 'Create a new database',
+                              value: 'create-new-database',
+                            })}
+                          value={newDatabaseOption ?? undefined}
+                          onValueChange={setNewDatabaseOption}
+                        />
+                      )}
+                      /
+                      <ComplexInput
+                        placeholder="Enter collection name"
+                        type="text"
+                        value={newCollectionName}
+                        onChange={e => {
+                          setNewCollectionName(e.target.value)
+                        }}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={() => {
+                          createCollection(newDatabaseName, newCollectionName)
+                            .catch(error => {
+                              console.error(error)
+                            })
+                            .finally(() => {
+                              setNewCollectionDialogOpen(false)
+                            })
+                        }}
+                      >
+                        Create
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                <ComplexSelect
+                  placeholder="Select a database"
+                  triggerClassName="border-0 hover:bg-input transition-colors"
+                  options={databases.map(db => ({
+                    label: db.name,
+                    value: db.name,
+                  }))}
+                  value={selectedDatabase?.name}
+                  onValueChange={value => {
+                    setSelectedDatabase(
+                      databases.find(db => db.name === value) ?? null
+                    )
+                  }}
+                />
+              </div>
               <div className="flex flex-col gap-1 mt-4">
                 {collections.map(collection => (
                   <Button
