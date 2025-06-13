@@ -24,7 +24,7 @@ export default function ComplexInput({
   const id = useId()
   return (
     <div className="*:not-first:mt-2">
-      <Label htmlFor={id}>{label}</Label>
+      {label && <Label htmlFor={id}>{label}</Label>}
       <div className="flex rounded-md shadow-xs">
         {prefix ? (
           <span className="border-input bg-background text-muted-foreground -z-10 inline-flex items-center rounded-s-md border px-3 text-sm">
