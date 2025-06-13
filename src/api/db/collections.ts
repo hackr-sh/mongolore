@@ -12,7 +12,9 @@ ipcMain.handle(
   ) => {
     const client = await getClient(connectionId)
     const db = client.db(databaseName)
-    const collections = await db.listCollections().toArray()
+    const collections = (await db.listCollections().toArray()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
     return collections
   }
 )
@@ -29,8 +31,14 @@ ipcMain.handle(
   ) => {
     const client = await getClient(connectionId)
     const db = client.db(databaseName)
-    const collection = await db.createCollection(collectionName)
-    return collection
+    await db.createCollection(collectionName)
+    return (
+      await db
+        .listCollections({
+          name: collectionName,
+        })
+        .toArray()
+    )[0]
   }
 )
 

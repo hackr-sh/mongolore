@@ -95,7 +95,9 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
       databaseName,
       collectionName,
     })
-    setCollections([...collections, collection])
+    setCollections(
+      [...collections, collection].sort((a, b) => a.name.localeCompare(b.name))
+    )
   }
 
   const dropCollection = async (collectionName: string) => {
