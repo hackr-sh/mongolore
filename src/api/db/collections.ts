@@ -16,3 +16,37 @@ ipcMain.handle(
     return collections
   }
 )
+
+ipcMain.handle(
+  'db:collections:createCollection',
+  async (
+    event,
+    {
+      connectionId,
+      databaseName,
+      collectionName,
+    }: { connectionId: string; databaseName: string; collectionName: string }
+  ) => {
+    const client = await getClient(connectionId)
+    const db = client.db(databaseName)
+    const collection = await db.createCollection(collectionName)
+    return collection
+  }
+)
+
+ipcMain.handle(
+  'db:collections:dropCollection',
+  async (
+    event,
+    {
+      connectionId,
+      databaseName,
+      collectionName,
+    }: { connectionId: string; databaseName: string; collectionName: string }
+  ) => {
+    const client = await getClient(connectionId)
+    const db = client.db(databaseName)
+    const success = await db.dropCollection(collectionName)
+    return { success }
+  }
+)

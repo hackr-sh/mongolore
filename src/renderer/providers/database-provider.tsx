@@ -20,6 +20,9 @@ interface DatabaseContextType {
 
   setSelectedDatabase: React.Dispatch<React.SetStateAction<Database | null>>
   setSelectedCollection: React.Dispatch<React.SetStateAction<Collection | null>>
+
+  createCollection: (collectionName: string) => Promise<void>
+  dropCollection: (collectionName: string) => Promise<void>
 }
 
 const DatabaseContext = createContext<DatabaseContextType | undefined>(
@@ -77,6 +80,32 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [selectedDatabase, connectionId])
 
+  const createCollection = async (collectionName: string) => {
+    if (!connectionId || !selectedDatabase) {
+      throw new Error('Connection ID and selected database are required')
+    }
+    const collection = await window.App.db.collections.createCollection({
+      connectionId,
+      databaseName: selectedDatabase?.name,
+      collectionName,
+    })
+    setCollections([...collections, collection])
+  }
+
+  const dropCollection = async (collectionName: string) => {
+    if (!connectionId || !selectedDatabase) {
+      throw new Error('Connection ID and selected database are required')
+    }
+    const { success } = await window.App.db.collections.dropCollection({
+      connectionId,
+      databaseName: selectedDatabase?.name,
+      collectionName,
+    })
+    if (success) {
+      setCollections(collections.filter(c => c.name !== collectionName))
+    }
+  }
+
   const value: DatabaseContextType = {
     databases,
     collections,
@@ -89,6 +118,9 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
 
     setSelectedDatabase,
     setSelectedCollection,
+
+    createCollection,
+    dropCollection,
   }
 
   return (

@@ -18,5 +18,22 @@ export default {
       ipcRenderer.invoke('db:collections:listCollections', data) as Promise<
         Collection[]
       >,
+    createCollection: (data: {
+      connectionId: string
+      databaseName: string
+      collectionName: string
+    }): Promise<Collection> =>
+      ipcRenderer.invoke(
+        'db:collections:createCollection',
+        data
+      ) as Promise<Collection>,
+    dropCollection: (data: {
+      connectionId: string
+      databaseName: string
+      collectionName: string
+    }): Promise<{ success: boolean }> =>
+      ipcRenderer.invoke('db:collections:dropCollection', data) as Promise<{
+        success: boolean
+      }>,
   },
 }
