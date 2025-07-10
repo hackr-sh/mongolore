@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/_index'
 import { Route as IndexIndexImport } from './routes/_index/index'
+import { Route as IndexSplatImport } from './routes/_index/$'
 
 // Create/Update Routes
 
@@ -27,6 +28,12 @@ const IndexIndexRoute = IndexIndexImport.update({
   getParentRoute: () => IndexRoute,
 } as any)
 
+const IndexSplatRoute = IndexSplatImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => IndexRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -37,6 +44,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
+    }
+    '/_index/$': {
+      id: '/_index/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof IndexSplatImport
+      parentRoute: typeof IndexImport
     }
     '/_index/': {
       id: '/_index/'
@@ -51,10 +65,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface IndexRouteChildren {
+  IndexSplatRoute: typeof IndexSplatRoute
   IndexIndexRoute: typeof IndexIndexRoute
 }
 
 const IndexRouteChildren: IndexRouteChildren = {
+  IndexSplatRoute: IndexSplatRoute,
   IndexIndexRoute: IndexIndexRoute,
 }
 
@@ -62,25 +78,28 @@ const IndexRouteWithChildren = IndexRoute._addFileChildren(IndexRouteChildren)
 
 export interface FileRoutesByFullPath {
   '': typeof IndexRouteWithChildren
+  '/$': typeof IndexSplatRoute
   '/': typeof IndexIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/$': typeof IndexSplatRoute
   '/': typeof IndexIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_index': typeof IndexRouteWithChildren
+  '/_index/$': typeof IndexSplatRoute
   '/_index/': typeof IndexIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/'
+  fullPaths: '' | '/$' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_index' | '/_index/'
+  to: '/$' | '/'
+  id: '__root__' | '/_index' | '/_index/$' | '/_index/'
   fileRoutesById: FileRoutesById
 }
 
@@ -108,8 +127,13 @@ export const routeTree = rootRoute
     "/_index": {
       "filePath": "_index.tsx",
       "children": [
+        "/_index/$",
         "/_index/"
       ]
+    },
+    "/_index/$": {
+      "filePath": "_index/$.tsx",
+      "parent": "/_index"
     },
     "/_index/": {
       "filePath": "_index/index.tsx",
