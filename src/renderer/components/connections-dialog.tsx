@@ -21,7 +21,11 @@ export const ConnectionsDialog = ({
     removeConnection,
   } = useConnections()
 
-  const [connectionString, setConnectionString] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [host, setHost] = useState('')
+  const [port, setPort] = useState('')
+  const [database, setDatabase] = useState('')
   const [name, setName] = useState('')
   const [editingName, setEditingName] = useState('')
   const [editingConnectionString, setEditingConnectionString] =
@@ -66,7 +70,7 @@ export const ConnectionsDialog = ({
       )}
       <div className="w-full h-full flex items-center justify-center flex-col gap-4">
         {newConnectionStep && !editingConnectionId && (
-          <div className="flex flex-col gap-4 w-xl">
+          <div className="flex flex-col gap-2 w-xl">
             <h1 className="text-2xl font-bold">Add a new connection</h1>
             <p className="text-sm text-muted-foreground">
               Enter the name and connection string for your new connection.
@@ -75,32 +79,73 @@ export const ConnectionsDialog = ({
               className="w-full"
               label="Name"
               placeholder="My Mongo Database"
+              placeholderAsLabel
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
             />
-            <ComplexInput
-              className="w-full"
-              label="Connection String"
-              placeholder="username:password@localhost:27017/database"
-              type="text"
-              prefix="mongodb://"
-              value={connectionString.replace('mongodb://', '')}
-              onChange={e => {
-                if (e.target.value.startsWith('mongodb://')) {
-                  setConnectionString(e.target.value)
-                } else {
-                  setConnectionString(`mongodb://${e.target.value}`)
-                }
-              }}
-            />
+            <div className="flex flex-row gap-2 w-full">
+              <ComplexInput
+                containerClassName="flex-1"
+                label="Host"
+                placeholderAsLabel
+                placeholder="localhost"
+                type="text"
+                value={host}
+                error={!host ? 'Host is required' : undefined}
+                onChange={e => setHost(e.target.value)}
+              />
+              <ComplexInput
+                containerClassName="flex-1"
+                label="Port"
+                placeholder="27017"
+                placeholderAsLabel
+                type="text"
+                value={port}
+                error={!port ? 'Port is required' : undefined}
+                onChange={e => setPort(e.target.value)}
+              />
+              <ComplexInput
+                containerClassName="flex-1"
+                label="Database"
+                placeholder="database"
+                placeholderAsLabel
+                type="text"
+                value={database}
+                onChange={e => setDatabase(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row gap-2 w-full">
+              <ComplexInput
+                containerClassName="flex-1"
+                label="Username"
+                placeholder="username"
+                placeholderAsLabel
+                type="text"
+                value={username}
+                error={!username ? 'Username is required' : undefined}
+                onChange={e => {
+                  setUsername(e.target.value)
+                }}
+              />
+              <ComplexInput
+                containerClassName="flex-1"
+                label="Password"
+                placeholder="password"
+                placeholderAsLabel
+                type="password"
+                value={password}
+                error={!password ? 'Password is required' : undefined}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </div>
             <Button
-              className="w-full"
+              className="w-full mt-4"
               onClick={() => {
-                if (name && connectionString) {
+                if (name && username && password && host && port) {
                   addConnection({
                     name,
-                    connectionString,
+                    connectionString: `mongodb://${username}:${password}@${host}:${port}/${database}`,
                   })
                   setNewConnectionStep(false)
                 }
