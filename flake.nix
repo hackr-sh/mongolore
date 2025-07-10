@@ -105,6 +105,9 @@
         apps = {
           dev = let
             dev = pkgs.writeShellScript "dev" ''
+              # start the local db
+              docker compose up -d
+
               export NIX_LD=$(cat ${stdenv.cc}/nix-support/dynamic-linker)
               export NIX_LD_LIBRARY_PATH="${lib.makeLibraryPath buildInputs}"
 
