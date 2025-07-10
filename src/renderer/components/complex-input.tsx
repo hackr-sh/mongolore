@@ -1,5 +1,5 @@
 import type { ClassValue } from 'clsx'
-import { useId } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import { Input } from 'renderer/components/ui/input'
 import { Label } from 'renderer/components/ui/label'
@@ -12,6 +12,10 @@ export default function ComplexInput({
   prefix,
   suffix,
   className,
+  error,
+  value,
+  placeholderAsLabel,
+  containerClassName,
   ...props
 }: {
   label?: string
@@ -20,11 +24,36 @@ export default function ComplexInput({
   prefix?: string
   suffix?: string
   className?: ClassValue
+  error?: string
+  placeholderAsLabel?: boolean
+  containerClassName?: ClassValue
 } & React.ComponentProps<typeof Input>) {
   const id = useId()
+  const [canShowError, setCanShowError] = useState(false)
+  const [focused, setFocused] = useState(false)
+
+  useEffect(() => {
+    if (value) {
+      setCanShowError(true)
+    }
+  }, [value])
+
   return (
-    <div className="*:not-first:mt-2">
-      {label && <Label htmlFor={id}>{label}</Label>}
+    <div className={cn('*:not-first:mt-2 relative', containerClassName)}>
+      {label && (
+        <Label
+          className={cn(
+            placeholderAsLabel &&
+              'absolute top-4 left-3 transition-all duration-200 text-sm text-muted-foreground/70',
+            placeholderAsLabel &&
+              (focused || value) &&
+              'top-0 left-1 bg-background px-2 text-xs text-muted-foreground'
+          )}
+          htmlFor={id}
+        >
+          {label}
+        </Label>
+      )}
       <div className="flex rounded-md shadow-xs">
         {prefix ? (
           <span className="border-input bg-background text-muted-foreground -z-10 inline-flex items-center rounded-s-md border px-3 text-sm">
@@ -37,10 +66,18 @@ export default function ComplexInput({
             'shadow-none',
             prefix && 'rounded-s-none -ms-px',
             suffix && 'rounded-e-none -me-px',
+            error && canShowError && 'border-destructive',
+            placeholderAsLabel &&
+              'placeholder:transition-all placeholder:duration-200 placeholder:delay-75 placeholder:opacity-0',
+            placeholderAsLabel &&
+              focused &&
+              'placeholder:left-3 placeholder:opacity-100',
             className
           )}
           placeholder={placeholder}
           type={type}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           {...props}
         />
         {suffix ? (
@@ -49,6 +86,9 @@ export default function ComplexInput({
           </span>
         ) : null}
       </div>
+      {error && canShowError && (
+        <p className="text-sm text-destructive">{error}</p>
+      )}
     </div>
   )
 }
