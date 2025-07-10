@@ -74,6 +74,7 @@ export default function ComplexInput({
               'placeholder:left-3 placeholder:opacity-100',
             className
           )}
+          value={value}
           placeholder={placeholder}
           type={type}
           onFocus={() => setFocused(true)}
