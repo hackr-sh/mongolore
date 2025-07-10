@@ -108,7 +108,7 @@ export const ConnectionsDialog = ({
               <ComplexInput
                 containerClassName="flex-1"
                 label="Database"
-                placeholder="database"
+                placeholder="myDatabase (optional)"
                 placeholderAsLabel
                 type="text"
                 value={database}
