@@ -1,4 +1,4 @@
-import { Outlet } from '@tanstack/react-router'
+import { Outlet, useNavigate } from '@tanstack/react-router'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -44,6 +44,16 @@ export const MasterDetail = ({
     setSelectedCollection,
     createCollection,
   } = useDatabase()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (selectedCollection && selectedDatabase) {
+      navigate({
+        to: `/${selectedDatabase.name}/${selectedCollection.name}`,
+        replace: true,
+      })
+    }
+  }, [selectedCollection, selectedDatabase])
 
   useEffect(() => {
     if (newDatabaseOption === 'create-new-database') {
